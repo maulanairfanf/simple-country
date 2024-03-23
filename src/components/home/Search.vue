@@ -1,25 +1,33 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import api from '../../hooks/api'
 import { useRouter } from 'vue-router'
-
+import { debounce } from 'lodash'
 const query = ref('')
 const listData = ref([])
 const isFocus = ref(false)
 const router = useRouter()
 const isLoading = ref(false)
+const debouncedFetchData = debounce(getCountry, 500)
+const isError = ref(false)
 
 async function getCountry() {
 	isLoading.value = true
-	try {
-		const response = await api.get('/v3.1/name/' + query.value)
-		if (response) {
-			console.log('response: ', response)
-			handleShowData(response.data)
+	if (query.value !== '') {
+		try {
+			const response = await api.get('/v3.1/name/' + query.value)
+			if (response) {
+				console.log('response: ', response)
+				handleShowData(response.data)
+			}
+		} catch (error) {
+			listData.value = []
+			isError.value = true
+			console.log('error: ', error)
 		}
-	} catch (error) {
+	} else {
 		listData.value = []
-		console.log('error: ', error)
+		isError.value = false
 	}
 	isLoading.value = false
 }
@@ -46,20 +54,12 @@ function handleSelectCountry(payload) {
 	router.push('detail-country/' + payload)
 }
 
-const isError = computed(() => {
-	return listData.value.length === 0 && query.value !== '' && !isLoading.value
-})
+const handleInput = () => {
+	debouncedFetchData()
+}
 
 onMounted(() => {
 	if (query.value !== '') getCountry()
-})
-
-watch(query, newValue => {
-	if (newValue !== '') {
-		getCountry()
-	} else {
-		listData.value = []
-	}
 })
 </script>
 <template>
@@ -72,7 +72,6 @@ watch(query, newValue => {
 			>
 			<div class="relative rounded-lg shadow-sm">
 				<input
-					v-model="query"
 					v-on:focus="handleFocus"
 					v-on:blur="handleBlur"
 					type="text"
@@ -80,6 +79,8 @@ watch(query, newValue => {
 					id="country"
 					class="input-search"
 					placeholder="Type any country name"
+					v-model="query"
+					@input="handleInput"
 				/>
 				<div
 					class="absolute inset-y-0 right-4 flex items-center"
@@ -104,7 +105,7 @@ watch(query, newValue => {
 				v-if="isFocus"
 			>
 				<div
-					v-if="isLoading"
+					v-if="isLoading && query !== ''"
 					class="py-2 cursor-pointer p-4 rounded-lg text-gray-900"
 				>
 					IsLoading...
