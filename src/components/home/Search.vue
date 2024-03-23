@@ -64,13 +64,13 @@ watch(query, newValue => {
 </script>
 <template>
 	<div class="w-screen h-screen flex justify-center items-center">
-		<div class="w-1/3 relative">
+		<div class="md:w-1/3 relative">
 			<label
 				for="country"
 				class="block text-6xl font-medium text-gray-900 text-center mb-10"
 				>COUNTRY</label
 			>
-			<div class="relative rounded-md shadow-sm">
+			<div class="relative rounded-lg shadow-sm">
 				<input
 					v-model="query"
 					v-on:focus="handleFocus"
@@ -78,12 +78,12 @@ watch(query, newValue => {
 					type="text"
 					name="country"
 					id="country"
-					class="w-full rounded-md border-0 text-gray-900 ring-1 ring-gray-200 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 p-4 focus:outline-none"
+					class="input-search"
 					placeholder="Type any country name"
 				/>
 				<div
 					class="absolute inset-y-0 right-4 flex items-center"
-					:class="isFocus ? 'text-purple-600' : 'text-gray-200'"
+					:class="isFocus ? 'text-purple-500' : 'text-gray-200'"
 				>
 					<svg
 						width="23"
@@ -100,19 +100,19 @@ watch(query, newValue => {
 				</div>
 			</div>
 			<div
-				class="absolute mt-2 shadow w-full rounded-md text-gray-900"
+				class="absolute mt-2 shadow w-full rounded-lg text-gray-900"
 				v-if="isFocus"
 			>
 				<div
 					v-if="isLoading"
-					class="py-2 cursor-pointer p-4 rounded-md text-gray-900"
+					class="py-2 cursor-pointer p-4 rounded-lg text-gray-900"
 				>
 					IsLoading...
 				</div>
 				<div
 					@click="handleSelectCountry(item.name.common)"
 					v-else-if="listData.length > 0"
-					class="py-2 hover:bg-gray-200 cursor-pointer p-4 rounded-md w-full text-gray-900"
+					class="py-2 hover:bg-gray-200 cursor-pointer p-4 rounded-lg w-full text-gray-900"
 					v-for="(item, index) in listData"
 					:key="index"
 				>
@@ -120,7 +120,7 @@ watch(query, newValue => {
 				</div>
 				<div
 					v-else-if="isError"
-					class="py-2 cursor-pointer p-4 rounded-md text-red-500"
+					class="py-2 cursor-pointer p-4 rounded-lg text-red-500"
 				>
 					Data not found
 				</div>
