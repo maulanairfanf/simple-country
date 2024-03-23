@@ -1,7 +1,17 @@
-# Vue 3 + Vite
+# How To Run
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Clone the repository
 
-## Recommended IDE Setup
+Git clone this project | "git clone https://github.com/maulanairfanf/orderfaz-test.git"
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Environment
+
+Rename file ".env.example" to ".env" and add this link "https://restcountries.com/" to varible VITE_API_URL
+
+## Install
+
+Install all modules in package.json | "npm install"
+
+## Run
+
+Run your app | "npm run dev"
