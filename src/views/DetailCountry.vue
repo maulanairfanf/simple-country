@@ -1,35 +1,75 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onBeforeMount, onMounted } from 'vue'
+import ButtonBack from '../components/reusable/ButtonBack.vue'
+import Location from '../components/detailcountry/Location.vue'
+import About from '../components/detailcountry/About.vue'
+import OtherInformation from '../components/detailcountry/OtherInformation.vue'
+import api from '../hooks/api'
+import { useRoute } from 'vue-router'
 
-const isShow = ref(false)
-function handleTooltip(event) {
-	if (event.type === 'mouseover') {
-		isShow.value = true
-	} else if (event.type === 'mouseleave') {
-		isShow.value = false
+const route = useRoute()
+
+const isLoading = ref(true)
+
+const detailCountry = ref({})
+const callingCode = ref('')
+const currency = ref('')
+const country = ref('')
+
+onBeforeMount(() => {
+	if (route.params && route.params.name) {
+		country.value = route.params.name
 	}
+})
+
+onMounted(async () => {
+	if (country.value !== '') {
+		await getDetailCountry()
+	}
+})
+
+function handleGetCurrency() {
+	currency.value = Object.keys(detailCountry.value.currencies)[0]
+}
+
+function handleGetCallingCode() {
+	callingCode.value =
+		detailCountry.value.idd.root.replace('+', '') +
+		detailCountry.value.idd.suffixes[0]
+}
+
+async function getDetailCountry() {
+	isLoading.value = true
+	try {
+		const response = await api.get(`/v3.1/name/${country.value}?fullText=true`)
+		if (response) {
+			detailCountry.value = response.data[0]
+			handleGetCurrency()
+			handleGetCallingCode()
+		}
+	} catch (error) {
+		console.log('error')
+	}
+	isLoading.value = false
 }
 </script>
 <template>
-	<div>
-		<button
-			v-on:mouseover="handleTooltip"
-			v-on:mouseleave="handleTooltip"
-			data-tooltip-target="tooltip-default"
-			type="button"
-			class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-		>
-			Default tooltip
-		</button>
-
-		<div
-			:class="!isShow && 'invisible opacity-0'"
-			id="tooltip-default"
-			role="tooltip"
-			class="absolute z-10 inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700"
-		>
-			Tooltip content
-			<div class="tooltip-arrow" data-popper-arrow></div>
+	<div class="container mx-auto px-2 md:px-0">
+		<div v-if="!detailCountry">Country is not found</div>
+		<div class="mt-10 md:mt-24" v-if="!isLoading">
+			<ButtonBack title="Back to Homepage" to="/" />
+			<About
+				:name="detailCountry.name.common"
+				:flagURL="detailCountry.flags.png"
+				:altSpellings="detailCountry.altSpellings"
+			/>
+			<Location
+				:capital="detailCountry.capital[0]"
+				:region="detailCountry.region"
+				:subregion="detailCountry.subregion"
+				:latLang="detailCountry.latlng"
+			/>
+			<OtherInformation :currency="currency" :callingCode="callingCode" />
 		</div>
 	</div>
 </template>
