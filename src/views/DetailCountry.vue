@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import ButtonBack from '../components/reusable/ButtonBack.vue'
 import Location from '../components/detailcountry/Location.vue'
 import About from '../components/detailcountry/About.vue'
@@ -16,13 +16,8 @@ const callingCode = ref('')
 const currency = ref('')
 const country = ref('')
 
-onBeforeMount(() => {
-	if (route.params && route.params.name) {
-		country.value = route.params.name
-	}
-})
-
 onMounted(async () => {
+	country.value = route.params.name
 	if (country.value !== '') {
 		await getDetailCountry()
 	}
