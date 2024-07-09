@@ -26,6 +26,7 @@ async function getCallingCodeCountry() {
 	try {
 		const response = await api.get(`/v2/callingcode/${props.callingCode}`)
 		if (response) {
+			console.log('response, getCallingCodeCountry', response)
 			listCountryCallingCode.value = response.data.map(country => country.name)
 		}
 	} catch (error) {
