@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Home from '../views/Home.vue'
-import DetailCountry from '../views/DetailCountry.vue'
+import Home from '../pages/Home.vue'
+import DetailCountry from '../pages/DetailCountry.vue'
 
 const router = createRouter({
 	history: createWebHistory(),

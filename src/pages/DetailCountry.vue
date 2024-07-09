@@ -1,3 +1,24 @@
+<template>
+	<div class="container mx-auto px-2 md:px-0">
+		<div v-if="!detailCountry">Country is not found</div>
+		<div class="mt-10 md:mt-24" v-if="!isLoading">
+			<ButtonBack title="Back to Homepage" to="/" />
+			<About
+				:name="detailCountry.name.common"
+				:flagURL="detailCountry.flags.png"
+				:altSpellings="detailCountry.altSpellings"
+			/>
+			<Location
+				:capital="detailCountry.capital[0]"
+				:region="detailCountry.region"
+				:subregion="detailCountry.subregion"
+				:latLang="detailCountry.latlng"
+			/>
+			<OtherInformation :currency="currency" :callingCode="callingCode" />
+		</div>
+	</div>
+</template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import ButtonBack from '../components/reusable/ButtonBack.vue'
@@ -48,23 +69,3 @@ async function getDetailCountry() {
 	isLoading.value = false
 }
 </script>
-<template>
-	<div class="container mx-auto px-2 md:px-0">
-		<div v-if="!detailCountry">Country is not found</div>
-		<div class="mt-10 md:mt-24" v-if="!isLoading">
-			<ButtonBack title="Back to Homepage" to="/" />
-			<About
-				:name="detailCountry.name.common"
-				:flagURL="detailCountry.flags.png"
-				:altSpellings="detailCountry.altSpellings"
-			/>
-			<Location
-				:capital="detailCountry.capital[0]"
-				:region="detailCountry.region"
-				:subregion="detailCountry.subregion"
-				:latLang="detailCountry.latlng"
-			/>
-			<OtherInformation :currency="currency" :callingCode="callingCode" />
-		</div>
-	</div>
-</template>

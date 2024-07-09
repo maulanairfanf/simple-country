@@ -1,67 +1,3 @@
-<script setup>
-import { onMounted, ref } from 'vue'
-import api from '../../hooks/api'
-import { useRouter } from 'vue-router'
-import { debounce } from 'lodash'
-const query = ref('')
-const listData = ref([])
-const isFocus = ref(false)
-const router = useRouter()
-const isLoading = ref(false)
-const debouncedFetchData = debounce(getCountry, 500)
-const isError = ref(false)
-
-async function getCountry() {
-	isLoading.value = true
-	if (query.value !== '') {
-		try {
-			const response = await api.get('/v3.1/name/' + query.value)
-			if (response) {
-				console.log('response: ', response)
-				handleShowData(response.data)
-			}
-		} catch (error) {
-			listData.value = []
-			isError.value = true
-			console.log('error: ', error)
-		}
-	} else {
-		listData.value = []
-		isError.value = false
-	}
-	isLoading.value = false
-}
-
-function handleShowData(payload) {
-	if (payload.length > 5) {
-		listData.value = payload.slice(0, 5)
-	} else {
-		listData.value = payload
-	}
-}
-
-function handleFocus() {
-	isFocus.value = true
-}
-
-function handleBlur() {
-	setTimeout(() => {
-		isFocus.value = false
-	}, 200)
-}
-
-function handleSelectCountry(payload) {
-	router.push('detail-country/' + payload)
-}
-
-const handleInput = () => {
-	debouncedFetchData()
-}
-
-onMounted(() => {
-	if (query.value !== '') getCountry()
-})
-</script>
 <template>
 	<div class="w-screen h-screen flex justify-center items-center">
 		<div class="md:w-1/3 relative">
@@ -72,15 +8,16 @@ onMounted(() => {
 			>
 			<div class="relative rounded-lg shadow-sm">
 				<input
-					v-on:focus="handleFocus"
-					v-on:blur="handleBlur"
+					@focus="handleFocus"
+					@blur="handleBlur"
 					type="text"
 					name="country"
 					id="country"
 					class="input-search"
 					placeholder="Type any country name"
-					v-model="query"
+					v-model="countryStore.query"
 					@input="handleInput"
+					autocomplete="off"
 				/>
 				<div
 					class="absolute inset-y-0 right-4 flex items-center"
@@ -105,22 +42,22 @@ onMounted(() => {
 				v-if="isFocus"
 			>
 				<div
-					v-if="isLoading && query !== ''"
+					v-if="countryStore.isLoading && countryStore.query !== ''"
 					class="py-2 cursor-pointer p-4 rounded-lg text-gray-900"
 				>
 					IsLoading...
 				</div>
 				<div
-					@click="handleSelectCountry(item.name.common)"
-					v-else-if="listData.length > 0"
+					v-else-if="countryStore.listData.length > 0"
+					v-for="(item, index) in countryStore.listData"
+					@click="handleSelectCountry(item.name.common, router)"
 					class="py-2 hover:bg-gray-200 cursor-pointer p-4 rounded-lg w-full text-gray-900"
-					v-for="(item, index) in listData"
 					:key="index"
 				>
 					{{ item.name.common }}
 				</div>
 				<div
-					v-else-if="isError"
+					v-else-if="countryStore.showError"
 					class="py-2 cursor-pointer p-4 rounded-lg text-red-500"
 				>
 					Data not found
@@ -129,3 +66,31 @@ onMounted(() => {
 		</div>
 	</div>
 </template>
+
+<script setup>
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useCountryStore } from '../../stores/country'
+
+const countryStore = useCountryStore()
+const router = useRouter()
+const isFocus = ref(false)
+
+function handleFocus() {
+	isFocus.value = true
+}
+function handleBlur() {
+	setTimeout(() => {
+		isFocus.value = false
+	}, 200)
+}
+
+function handleSelectCountry(payload, router) {
+	router.push('detail-country/' + payload)
+}
+
+function handleInput() {
+	countryStore.isLoading = true
+	countryStore.debouncedFetchData()
+}
+</script>
