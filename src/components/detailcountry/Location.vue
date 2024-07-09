@@ -28,7 +28,7 @@ defineProps({
 			<div class="shadow-md flex justify-between flex-wrap">
 				<div class="flex flex-col ml-10 justify-center">
 					<span class="font-bold text-lg mb-2">LatLong</span>
-					<div class="flex items-center">
+					<div class="flex items-center flex-wrap">
 						<span
 							class="text-5xl text-purple-500 font-bold"
 							v-for="(item, index) in latLang"

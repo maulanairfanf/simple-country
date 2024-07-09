@@ -1,6 +1,11 @@
 <template>
 	<div class="container mx-auto px-2 md:px-0">
-		<div v-if="Object.keys(countryStore.detailCountry).length === 0">
+		<div
+			v-if="
+				Object.keys(countryStore.detailCountry).length === 0 &&
+				!countryStore.isLoading
+			"
+		>
 			<EmptyBox message="Country not found" />
 		</div>
 

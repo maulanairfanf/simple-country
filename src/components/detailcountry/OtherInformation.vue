@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import api from '../../hooks/api'
+import { onMounted } from 'vue'
 import BoxInformationCountry from '../reusable/BoxInformationCountry.vue'
+import { useCountryStore } from '../../stores/country'
 
 const props = defineProps({
 	currency: {
@@ -16,41 +16,11 @@ const props = defineProps({
 	},
 })
 
-const listCountryCallingCode = ref([])
-const listCountryCurrency = ref([])
-
-const isLoading = ref(false)
-
-async function getCallingCodeCountry() {
-	isLoading.value = true
-	try {
-		const response = await api.get(`/v2/callingcode/${props.callingCode}`)
-		if (response) {
-			console.log('response, getCallingCodeCountry', response)
-			listCountryCallingCode.value = response.data.map(country => country.name)
-		}
-	} catch (error) {
-		console.log('error')
-	}
-	isLoading.value = false
-}
-
-async function getCurrencyCountry() {
-	isLoading.value = true
-	try {
-		const response = await api.get(`/v2/currency/${props.currency}`)
-		if (response) {
-			listCountryCurrency.value = response.data.map(country => country.name)
-		}
-	} catch (error) {
-		console.log('error')
-	}
-	isLoading.value = false
-}
+const countryStore = useCountryStore()
 
 onMounted(async () => {
-	await getCallingCodeCountry()
-	await getCurrencyCountry()
+	await countryStore.fetchCallingCodeCountry(props.callingCode)
+	await countryStore.fetchCurrencyCountry(props.currency)
 })
 </script>
 <template>
@@ -59,13 +29,13 @@ onMounted(async () => {
 			title="Calling Code"
 			description="with this calling code"
 			:kind="callingCode"
-			:listCountry="listCountryCallingCode"
+			:listCountry="countryStore.listCountryCallingCode"
 		/>
 		<BoxInformationCountry
 			title="Currency"
 			description="with this currency"
 			:kind="currency"
-			:listCountry="listCountryCurrency"
+			:listCountry="countryStore.listCountryCurrency"
 		/>
 	</div>
 </template>

@@ -3,16 +3,12 @@
 		<h1 class="text-5xl font-semibold mb-10">
 			{{ message }}
 		</h1>
-		<button
-			@click="handleRedirect"
-			class="rounded-lg px-4 py-2 border border-purple-500 outline-none hover:border-gray-500 hover:bg-purple-500 hover:text-white font-semibold"
-		>
-			Back to home
-		</button>
+		<ButtonBack title="Back to Homepage" to="/" />
 	</div>
 </template>
 <script setup>
 import { useRouter } from 'vue-router'
+import ButtonBack from './ButtonBack.vue'
 defineProps({
 	message: {
 		type: String,

@@ -11,6 +11,8 @@ export const useCountryStore = defineStore('country', {
 		detailCountry: {},
 		callingCode: '',
 		currency: '',
+		listCountryCallingCode: [],
+		listCountryCurrency: [],
 	}),
 	getters: {
 		showError(state) {
@@ -57,6 +59,31 @@ export const useCountryStore = defineStore('country', {
 				console.log('error', error)
 			}
 			this.isLoading = false
+		},
+
+		async fetchCallingCodeCountry(callingCode) {
+			try {
+				const response = await api.get(`/v2/callingcode/${callingCode}`)
+				if (response) {
+					console.log('response, getCallingCodeCountry', response)
+					this.listCountryCallingCode = response.data.map(
+						country => country.name
+					)
+				}
+			} catch (error) {
+				console.log('error')
+			}
+		},
+
+		async fetchCurrencyCountry(currency) {
+			try {
+				const response = await api.get(`/v2/currency/${currency}`)
+				if (response) {
+					this.listCountryCurrency = response.data.map(country => country.name)
+				}
+			} catch (error) {
+				console.log('error')
+			}
 		},
 
 		handleGetCurrency() {
